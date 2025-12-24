@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="flex-shrink: 0;">
+    <h1>Library Books</h1>
+
+    <form id="filter-form" method="GET" class="mb-4">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <input type="text" class="form-control filter-input" name="isbn" placeholder="ISBN" value="{{ filters.isbn }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control filter-input" name="title" placeholder="Title" value="{{ filters.title }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control filter-input" name="author" placeholder="Author" value="{{ filters.author }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control filter-input" name="publisher" placeholder="Publisher" value="{{ filters.publisher }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control filter-input" name="year" placeholder="Year" value="{{ filters.year }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control filter-input" name="signature" placeholder="Signature" value="{{ filters.signature }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control filter-input" name="keywords" placeholder="Keywords" value="{{ filters.keywords }}">
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('download_csv') }}?{{ request.query_string.decode() }}" class="btn btn-secondary">Download CSV</a>
+            </div>
+        </div>
+    </form>
+
+    {% if current_user.is_authenticated %}
+    <div class="mb-3">
+        <a href="{{ url_for('add_book') }}" class="btn btn-success">Add Book</a>
+        <a href="{{ url_for('upload_csv') }}" class="btn btn-info">Upload CSV</a>
+    </div>
+    {% endif %}
+</div>
+
+<div style="flex: 1; overflow-y: auto;">
+    <div id="books-list">
+        {% include '_books_list.html' %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterInputs = document.querySelectorAll('.filter-input');
+    const booksList = document.getElementById('books-list');
+
+    let debounceTimer;
+
+    function updateBooks() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            const form = document.getElementById('filter-form');
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            params.append('ajax', '1');
+
+            fetch(`?${params.toString()}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                booksList.innerHTML = html;
+            })
+            .catch(error => console.error('Error:', error));
+        }, 300); // 300ms debounce
+    }
+
+    filterInputs.forEach(input => {
+        input.addEventListener('input', updateBooks);
+    });
+});
+</script>
+{% endblock %}

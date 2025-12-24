@@ -1,0 +1,32 @@
+<div class="list-group">
+    {% for book in books %}
+    <div class="list-group-item">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1 text-truncate me-2">
+                <strong>{{ book.title }}</strong> by {{ book.author }} ({{ book.year }}) - ISBN: {{ book.isbn }}, Publisher: {{ book.publisher }}, Signature: {{ book.signature }}, Keywords: {{ book.keywords }}, Description: {{ book.description }}
+            </div>
+            <div class="btn-group" role="group">
+                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#details-{{ book.id }}" aria-expanded="false" aria-controls="details-{{ book.id }}">
+                    Details
+                </button>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('edit_book', id=book.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{{ url_for('delete_book', id=book.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="collapse mt-2" id="details-{{ book.id }}">
+            <div class="card card-body">
+                <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+                <p><strong>Title:</strong> {{ book.title }}</p>
+                <p><strong>Author:</strong> {{ book.author }}</p>
+                <p><strong>Publisher:</strong> {{ book.publisher }}</p>
+                <p><strong>Year:</strong> {{ book.year }}</p>
+                <p><strong>Signature:</strong> {{ book.signature }}</p>
+                <p><strong>Description:</strong> {{ book.description }}</p>
+                <p><strong>Keywords:</strong> {{ book.keywords }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
