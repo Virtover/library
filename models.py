@@ -4,9 +4,9 @@ db = SQLAlchemy()
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    isbn = db.Column(db.String(20), unique=True, nullable=False)
+    isbn = db.Column(db.String(20))
     title = db.Column(db.String(200), nullable=False)
-    author = db.Column(db.String(200), nullable=False)
+    author = db.Column(db.String(200))
     publisher = db.Column(db.String(200))
     year = db.Column(db.Integer)
     signature = db.Column(db.String(100))
